@@ -4,23 +4,6 @@ export const motdCommand: Command = {
   name: 'motd',
   description: 'Displays the message of the day',
   execute: (): CommandOutput[] => {
-    // Get current date to seed the random message selection
-    const today = new Date();
-    const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-    
-    // Use the date string to create a deterministic random number for today
-    const hashCode = (str: string) => {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = ((hash << 5) - hash) + str.charCodeAt(i);
-        hash |= 0; // Convert to 32bit integer
-      }
-      return hash;
-    };
-    
-    const todaysSeed = hashCode(dateString);
-    const randomIndex = Math.abs(todaysSeed) % messages.length;
-    
     const messages = [
       "The best error message is the one that never shows up. — Thomas Fuchs",
       "First, solve the problem. Then, write the code. — John Johnson",
@@ -49,12 +32,28 @@ export const motdCommand: Command = {
       "In theory, there is no difference between theory and practice. But, in practice, there is. — Jan L. A. van de Snepscheut",
       "Talk is cheap. Show me the code. — Linus Torvalds"
     ];
-    
+
+    const today = new Date();
+    const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+
+    const hashCode = (str: string) => {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return hash;
+    };
+
+    const todaysSeed = hashCode(dateString);
+    const randomIndex = Math.abs(todaysSeed) % messages.length;
+    const message = messages[randomIndex];
+
     return [{
       text: `
 ╔════════════════════════ MESSAGE OF THE DAY ════════════════════════╗
 ║                                                                     ║
-  "${messages[randomIndex]}"
+  "${message}"
 ║                                                                     ║
 ╚═════════════════════════════════════════════════════════════════════╝
 `,
