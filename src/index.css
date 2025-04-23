@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --terminal-green: #00FF00;
+  --terminal-dark-green: #00CC00;
+  --terminal-black: #000000;
+  --scan-line-height: 2px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--terminal-black);
+  font-family: 'VT323', monospace;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+/* CRT Effect Styles */
+.crt-screen {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--terminal-black);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.15);
+  padding: 2rem;
+}
+
+/* Scan lines */
+.crt-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 100% var(--scan-line-height);
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* CRT curvature */
+.crt-screen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 101;
+}
+
+/* Terminal Content */
+.terminal-content {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: var(--terminal-green);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+  padding: 0 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--terminal-dark-green) var(--terminal-black);
+}
+
+.terminal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-content::-webkit-scrollbar-track {
+  background: var(--terminal-black);
+}
+
+.terminal-content::-webkit-scrollbar-thumb {
+  background-color: var(--terminal-dark-green);
+  border-radius: 10px;
+}
+
+/* Input Line */
+.input-line {
+  display: flex;
+  margin: 8px 0;
+  align-items: center;
+}
+
+.prompt {
+  white-space: nowrap;
+  color: var(--terminal-green);
+}
+
+.input-field {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--terminal-green);
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  caret-color: transparent;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+/* Blinking Cursor */
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 1.2rem;
+  background-color: var(--terminal-green);
+  animation: blink 1s step-start infinite;
+  margin-left: 0px;
+  position: relative;
+  top: 1px;
+}
+
+/* Output Styles */
+.output-text {
+  margin: 8px 0;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+/* Animation Keyframes */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes flicker {
+  0% { opacity: 0.97; }
+  5% { opacity: 0.9; }
+  10% { opacity: 0.97; }
+  15% { opacity: 0.92; }
+  20% { opacity: 0.97; }
+  25% { opacity: 0.95; }
+  30% { opacity: 0.97; }
+  35% { opacity: 0.93; }
+  40% { opacity: 0.97; }
+  45% { opacity: 0.94; }
+  50% { opacity: 0.98; }
+  55% { opacity: 0.95; }
+  60% { opacity: 0.97; }
+  65% { opacity: 0.93; }
+  70% { opacity: 0.97; }
+  75% { opacity: 0.9; }
+  80% { opacity: 0.98; }
+  85% { opacity: 0.95; }
+  90% { opacity: 0.97; }
+  95% { opacity: 0.93; }
+  100% { opacity: 0.97; }
+}
+
+.crt-flicker {
+  animation: flicker 0.15s infinite;
+  animation-timing-function: linear;
+  opacity: 0.97;
+}
+
+.ascii-art {
+  font-family: monospace;
+  white-space: pre;
+  line-height: 1.2;
+  margin: 10px 0;
+}
+
+.boot-sequence {
+  opacity: 0;
+  animation: typeOn 0.5s forwards;
+}
+
+@keyframes typeOn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.typing-animation {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 2s steps(40, end);
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Matrix effect */
+.matrix-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background-color: var(--terminal-black);
+}
+
+.matrix-canvas {
+  display: block;
+}
+
+@media screen and (max-width: 768px) {
+  .crt-screen {
+    padding: 1rem;
+  }
+  
+  .terminal-content {
+    padding: 0 0.5rem;
+  }
+}
