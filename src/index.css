@@ -17,6 +17,7 @@ html, body {
   overflow: hidden;
   background-color: var(--terminal-black);
   font-family: 'VT323', monospace;
+  font-size: 150%;
 }
 
 #root {
