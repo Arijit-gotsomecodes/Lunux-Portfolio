@@ -2,6 +2,8 @@
 
 > 🚀 **Totally vibe coded.** This is an interactive Linux-style portfolio website built with retro CRT monitor aesthetics — fully keyboard-driven, no buttons, no BS. Just pure hacker vibes and pixel-perfect nostalgia.
 
+🔗 **Live Demo:** [terminalportfolionew.netlify.app](https://terminalportfolionew.netlify.app)
+
 
 ---
 
@@ -19,6 +21,13 @@ A web-based personal portfolio that **feels like you're SSHing into someone's br
 - ✅ Real-world sections: Projects, Skills, Resume, Contact
 - ✅ Responsive on mobile, surprisingly slick on tablets
 - ✅ **Vibe coded** from start to finish
+
+---
+
+## 🔗 Live Demo
+
+Check it out in action here:  
+🌐 [https://terminalportfolionew.netlify.app](https://terminalportfolionew.netlify.app)
 
 ---
 
