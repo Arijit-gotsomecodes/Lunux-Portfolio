@@ -1,20 +1,27 @@
-import { Command, CommandOutput } from '../types';
+import { Command, CommandOutput, HistoryEntry } from '../types';
 
-// For simplicity, we'll just return a placeholder message
-// The actual implementation would access the Terminal component's history state
+interface HistoryContext {
+  history: HistoryEntry[];
+}
+
 export const historyCommand: Command = {
   name: 'history',
   description: 'Shows command history',
-  execute: (): CommandOutput[] => {
-    // This is just a placeholder - real implementation would come from the Terminal component
-    return [{
-      text: `
-Note: This is a demo command. Your actual command history would appear here.
-In a real implementation, this would show all the commands you've entered during
-this session.
+  execute: (_args: string[], context?: HistoryContext): CommandOutput[] => {
+    if (!context || !context.history) {
+      return [{
+        text: 'History is not available in this context.',
+        isError: true
+      }];
+    }
 
-Type 'clear' to clear the terminal or 'help' to see available commands.
-`
+    const visibleHistory = context.history
+      .filter(entry => entry.command !== 'system')
+      .map((entry, index) => `${index + 1}: ${entry.command}`)
+      .join('\n');
+
+    return [{
+      text: visibleHistory || 'No commands entered yet.'
     }];
   },
 };

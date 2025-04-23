@@ -117,22 +117,22 @@ const Terminal: React.FC = () => {
     const cmdLower = cmd.toLowerCase();
     const args = cmdLower.split(' ');
     const command = args[0];
-    
+  
     // Add to history immediately for UI feedback
     setHistory(prev => [...prev, { command: cmd, output: [] }]);
-    
+  
     if (soundEnabled) {
       playBeep();
     }
-    
+  
     let output: CommandOutput[] = [];
-    
+  
     // Special matrix command handling
     if (command === 'matrix') {
       setShowMatrix(true);
       return;
     }
-    
+  
     // Toggle sound effects
     if (command === 'sound') {
       setSoundEnabled(!soundEnabled);
@@ -146,23 +146,23 @@ const Terminal: React.FC = () => {
     // Process command via registry
     else if (commands[command]) {
       try {
-        output = await commands[command].execute(args.slice(1));
+        output = await commands[command].execute(args.slice(1), { history });
       } catch (error) {
-        output = [{ 
-          text: `Error executing command: ${(error as Error).message}`, 
-          isError: true 
+        output = [{
+          text: `Error executing command: ${(error as Error).message}`,
+          isError: true
         }];
       }
     } else if (command === 'exit') {
       output = [{ text: 'Goodbye! Refreshing...' }];
       setTimeout(() => window.location.reload(), 1500);
     } else {
-      output = [{ 
-        text: `Command not found: ${command}. Type 'help' for available commands.`, 
-        isError: true 
+      output = [{
+        text: `Command not found: ${command}. Type 'help' for available commands.`,
+        isError: true
       }];
     }
-    
+  
     // Update history with output
     setHistory(prev => {
       const newHistory = [...prev];
@@ -172,6 +172,7 @@ const Terminal: React.FC = () => {
       return newHistory;
     });
   };
+  
   
   // Handle matrix mode exit
   const exitMatrix = () => {
