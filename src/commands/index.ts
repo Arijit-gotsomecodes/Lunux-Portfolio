@@ -12,6 +12,7 @@ import { sudoCommand } from './sudoCommand';
 import { catCommand } from './catCommand';
 import { asciiCommand } from './asciiCommand';
 import { motdCommand } from './motdCommand';
+import { themeCommand } from './themeCommand';
 
 // Command Registry
 export const commands: CommandRegistry = {
@@ -27,5 +28,6 @@ export const commands: CommandRegistry = {
   sudo: sudoCommand,
   cat: catCommand,
   ascii: asciiCommand,
-  motd: motdCommand
+  motd: motdCommand,
+  theme: themeCommand
 };

@@ -3,9 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --terminal-green: #00FF00;
-  --terminal-dark-green: #00CC00;
-  --terminal-black: #000000;
+  --terminal-background: #000000;
+  --terminal-text: #00FF00;
+  --terminal-cursor: #00FF00;
+  --terminal-selection: rgba(0, 255, 0, 0.3);
   --scan-line-height: 2px;
 }
 
@@ -15,10 +16,8 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: var(--terminal-black);
+  background-color: var(--terminal-background);
   font-family: 'VT323', monospace;
-  font-size: clamp(1.1rem, 2vw, 1.39rem);   /*adjust for global style*/
-  
 }
 
 #root {
@@ -32,7 +31,7 @@ html, body {
   height: 100vh;
   width: 100%;
   overflow: hidden;
-  background-color: var(--terminal-black);
+  background-color: var(--terminal-background);
   border-radius: 20px;
   box-shadow: 0 0 30px rgba(0, 255, 0, 0.15);
   padding: 2rem;
@@ -46,14 +45,13 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.1) 50%,
-    transparent 100%
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
   );
-  background-size: 100% var(--scan-line-height);
-  opacity: 0.2;
   pointer-events: none;
   z-index: 100;
 }
@@ -75,17 +73,46 @@ html, body {
   z-index: 101;
 }
 
+/* Grain overlay */
+.grain-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-conic-gradient(
+    rgba(0, 0, 0, 0.15) 0% 0.000001%,
+    transparent 0% 0.092%
+  ), repeating-conic-gradient(
+    rgba(0, 0, 0, 0.15) 0% 0.000001%,
+    transparent 0% 0.051%
+  ), repeating-conic-gradient(
+    rgba(0, 0, 0, 0.15) 0% 0.000001%,
+    transparent 0% 0.064%
+  );
+  background-size: 100% 100%, 50% 50%, 25% 25%;
+  background-position: 0 0;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 102;
+  animation: grain 0.8s steps(1) infinite;
+}
+
 /* Terminal Content */
 .terminal-content {
   height: 100%;
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  color: var(--terminal-green);
-  text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+  color: var(--terminal-text);
+  text-shadow: 0 0 5px var(--terminal-cursor);
   padding: 0 1rem;
   scrollbar-width: thin;
-  scrollbar-color: var(--terminal-dark-green) var(--terminal-black);
+  scrollbar-color: var(--terminal-cursor) var(--terminal-background);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
 }
 
 .terminal-content::-webkit-scrollbar {
@@ -93,11 +120,11 @@ html, body {
 }
 
 .terminal-content::-webkit-scrollbar-track {
-  background: var(--terminal-black);
+  background: var(--terminal-background);
 }
 
 .terminal-content::-webkit-scrollbar-thumb {
-  background-color: var(--terminal-dark-green);
+  background-color: var(--terminal-cursor);
   border-radius: 10px;
 }
 
@@ -106,18 +133,19 @@ html, body {
   display: flex;
   margin: 8px 0;
   align-items: center;
+  position: relative;
 }
 
 .prompt {
   white-space: nowrap;
-  color: var(--terminal-green);
+  color: var(--terminal-text);
 }
 
 .input-field {
   background: transparent;
   border: none;
   outline: none;
-  color: var(--terminal-green);
+  color: var(--terminal-text);
   font-family: 'VT323', monospace;
   font-size: 1.2rem;
   caret-color: transparent;
@@ -126,16 +154,18 @@ html, body {
   flex: 1;
 }
 
+.input-field::selection {
+  background-color: var(--terminal-selection);
+}
+
 /* Blinking Cursor */
 .cursor {
   display: inline-block;
-  width: 10px;
-  height: 1.2rem;
-  background-color: var(--terminal-green);
-  animation: blink 1s step-start infinite;
-  margin-left: 0px;
-  position: relative;
-  top: 1px;
+  width: 0.6ch;
+  height: 1.2em;
+  background-color: var(--terminal-cursor);
+  animation: blink 1s step-end infinite;
+  position: absolute;
 }
 
 /* Output Styles */
@@ -145,40 +175,61 @@ html, body {
   line-height: 1.4;
 }
 
+/* Text Flicker Animations */
+.text-flicker {
+  animation: textFlicker 6s infinite;
+  animation-timing-function: steps(1, end);
+  animation-fill-mode: both;
+}
+
+
 /* Animation Keyframes */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
-@keyframes flicker {
-  0% { opacity: 0.97; }
-  5% { opacity: 0.9; }
-  10% { opacity: 0.97; }
-  15% { opacity: 0.92; }
-  20% { opacity: 0.97; }
-  25% { opacity: 0.95; }
-  30% { opacity: 0.97; }
-  35% { opacity: 0.93; }
-  40% { opacity: 0.97; }
-  45% { opacity: 0.94; }
-  50% { opacity: 0.98; }
-  55% { opacity: 0.95; }
-  60% { opacity: 0.97; }
-  65% { opacity: 0.93; }
-  70% { opacity: 0.97; }
-  75% { opacity: 0.9; }
-  80% { opacity: 0.98; }
-  85% { opacity: 0.95; }
-  90% { opacity: 0.97; }
-  95% { opacity: 0.93; }
-  100% { opacity: 0.97; }
+@keyframes textFlicker {
+  0%, 48%, 60%, 72%, 80%, 90%, 100% { opacity: 1; }
+  49% { opacity: 0.68; }
+  50% { opacity: 0.87; }
+  51% { opacity: 0.65; }
+  52% { opacity: 0.95; }
+  53% { opacity: 0.7; }
+  54% { opacity: 1; }
+  61% { opacity: 0.72; }
+  62% { opacity: 0.92; }
+  63% { opacity: 0.67; }
+  64% { opacity: 1; }
+  73% { opacity: 0.63; }
+  74% { opacity: 0.75; }
+  75% { opacity: 0.69; }
+  76% { opacity: 0.88; }
+  81% { opacity: 0.61; }
+  82% { opacity: 0.85; }
+  83% { opacity: 0.68; }
+  84% { opacity: 0.82; }
+  85% { opacity: 0.64; }
+  86% { opacity: 1; }
+  91% { opacity: 0.62; }
+  92% { opacity: 0.74; }
+  93% { opacity: 0.67; }
+  94% { opacity: 0.97; }
+  95% { opacity: 0.71; }
+  96% { opacity: 0.85; }
+  97% { opacity: 0.6; }
+  98% { opacity: 0.89; }
+  99% { opacity: 0.73; }
 }
 
-.crt-flicker {
-  animation: flicker 0.15s infinite;
-  animation-timing-function: linear;
-  opacity: 0.97;
+
+
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(1px, -1px) scale(1.02); }
+  50% { transform: translate(-1px, 1px) scale(0.98); }
+  75% { transform: translate(1px, 1px) scale(1.02); }
 }
 
 .ascii-art {
@@ -194,12 +245,8 @@ html, body {
 }
 
 @keyframes typeOn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .typing-animation {
@@ -209,12 +256,8 @@ html, body {
 }
 
 @keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+  from { width: 0; }
+  to { width: 100%; }
 }
 
 /* Matrix effect */
@@ -225,7 +268,7 @@ html, body {
   width: 100%;
   height: 100%;
   z-index: 1000;
-  background-color: var(--terminal-black);
+  background-color: var(--terminal-background);
 }
 
 .matrix-canvas {
@@ -235,6 +278,7 @@ html, body {
 @media screen and (max-width: 768px) {
   .crt-screen {
     padding: 1rem;
+    animation: textFlicker 1.5s infinite;
   }
   
   .terminal-content {

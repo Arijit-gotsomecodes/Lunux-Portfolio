@@ -13,6 +13,7 @@ const Terminal: React.FC = () => {
   const [booting, setBooting] = useState<boolean>(true);
   const [showMatrix, setShowMatrix] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(false);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
   
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -66,19 +67,17 @@ const Terminal: React.FC = () => {
     // Navigate command history
     if (e.key === 'ArrowUp') {
       e.preventDefault();
-      if (historyIndex < history.length - 1) {
+      if (historyIndex < commandHistory.length - 1) {
         const newIndex = historyIndex + 1;
         setHistoryIndex(newIndex);
-        const cmd = history[history.length - 1 - newIndex]?.command;
-        if (cmd && cmd !== 'system') setInput(cmd);
+        setInput(commandHistory[commandHistory.length - 1 - newIndex] || '');
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       if (historyIndex > 0) {
         const newIndex = historyIndex - 1;
         setHistoryIndex(newIndex);
-        const cmd = history[history.length - 1 - newIndex]?.command;
-        if (cmd && cmd !== 'system') setInput(cmd);
+        setInput(commandHistory[commandHistory.length - 1 - newIndex] || '');
       } else {
         setHistoryIndex(-1);
         setInput('');
@@ -86,6 +85,7 @@ const Terminal: React.FC = () => {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (input.trim()) {
+        setCommandHistory(prev => [...prev, input.trim()]);
         await processCommand(input.trim());
         setInput('');
         setHistoryIndex(-1);
@@ -117,22 +117,22 @@ const Terminal: React.FC = () => {
     const cmdLower = cmd.toLowerCase();
     const args = cmdLower.split(' ');
     const command = args[0];
-  
+    
     // Add to history immediately for UI feedback
     setHistory(prev => [...prev, { command: cmd, output: [] }]);
-  
+    
     if (soundEnabled) {
       playBeep();
     }
-  
+    
     let output: CommandOutput[] = [];
-  
+    
     // Special matrix command handling
     if (command === 'matrix') {
       setShowMatrix(true);
       return;
     }
-  
+    
     // Toggle sound effects
     if (command === 'sound') {
       setSoundEnabled(!soundEnabled);
@@ -143,26 +143,34 @@ const Terminal: React.FC = () => {
       setHistory([welcomeMessage]);
       return;
     }
+    // History command handling
+    else if (command === 'history') {
+      output = [{
+        text: commandHistory
+          .map((cmd, index) => `${(index + 1).toString().padStart(4)}  ${cmd}`)
+          .join('\n')
+      }];
+    }
     // Process command via registry
     else if (commands[command]) {
       try {
-        output = await commands[command].execute(args.slice(1), { history });
+        output = await commands[command].execute(args.slice(1));
       } catch (error) {
-        output = [{
-          text: `Error executing command: ${(error as Error).message}`,
-          isError: true
+        output = [{ 
+          text: `Error executing command: ${(error as Error).message}`, 
+          isError: true 
         }];
       }
     } else if (command === 'exit') {
       output = [{ text: 'Goodbye! Refreshing...' }];
       setTimeout(() => window.location.reload(), 1500);
     } else {
-      output = [{
-        text: `Command not found: ${command}. Type 'help' for available commands.`,
-        isError: true
+      output = [{ 
+        text: `Command not found: ${command}. Type 'help' for available commands.`, 
+        isError: true 
       }];
     }
-  
+    
     // Update history with output
     setHistory(prev => {
       const newHistory = [...prev];
@@ -172,7 +180,6 @@ const Terminal: React.FC = () => {
       return newHistory;
     });
   };
-  
   
   // Handle matrix mode exit
   const exitMatrix = () => {
@@ -201,11 +208,12 @@ const Terminal: React.FC = () => {
   }
 
   return (
-    <div className="crt-screen" onClick={handleTerminalClick}>
-      <div ref={terminalRef} className="terminal-content">
+    <div className="crt-screen " onClick={handleTerminalClick}>
+      <div className="grain-overlay"></div>
+      <div ref={terminalRef} className="terminal-content text-flicker">
         {/* Render command history and outputs */}
         {history.map((entry, index) => (
-          <div key={index}>
+          <div key={index} className="text-flicker">
             {entry.command !== 'system' && (
               <div className="input-line">
                 <span className="prompt">visitor@portfolio:~$</span>
@@ -225,12 +233,12 @@ const Terminal: React.FC = () => {
         ))}
         
         {/* Input line */}
-        <div className="input-line">
+        <div className="input-line relative text-flicker">
           <span className="prompt">visitor@portfolio:~$</span>
           <input
             ref={inputRef}
             type="text"
-            className="input-field ml-2"
+            className="input-field ml-2 bg-transparent border-none outline-none text-green-500 font-mono"
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -238,7 +246,14 @@ const Terminal: React.FC = () => {
             autoComplete="off"
             autoCapitalize="off"
           />
-          <span className="cursor"></span>
+          <span 
+            className="cursor absolute"
+            style={{ 
+              left: `calc(${20.2}ch + ${input.length}ch)`,
+              top: '0',
+              height: '1.2em'
+            }}
+          />
         </div>
       </div>
       

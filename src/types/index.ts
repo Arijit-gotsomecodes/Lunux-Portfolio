@@ -20,3 +20,12 @@ export interface Command {
 export interface CommandRegistry {
   [key: string]: Command;
 }
+
+export interface Theme {
+  name: string;
+  background: string;
+  text: string;
+  cursor: string;
+  selection: string;
+  description: string;
+}

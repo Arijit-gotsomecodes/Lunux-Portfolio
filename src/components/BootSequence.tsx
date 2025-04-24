@@ -30,9 +30,9 @@ export const BootSequence: React.FC = () => {
   }, []);
   
   return (
-    <div className="crt-screen crt-flicker">
-      <div className="terminal-content">
-        <div className="ascii-art">
+    <div className="crt-screen text-flicker">
+      <div className="terminal-content text-flicker">
+        <div className="ascii-art text-flicker">
 {`
  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄       ▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄            
 ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌     ▐░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌▐░░░░░░░░░░░▌▐░▌           
@@ -45,13 +45,16 @@ export const BootSequence: React.FC = () => {
      ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄ ▐░▌      ▐░▌ ▐░▌       ▐░▌▐░▌       ▐░▌▐░█▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ 
      ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
       ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀         ▀  ▀         ▀  ▀         ▀  ▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀ 
-                                                                                                          
 `}
         </div>
         
-        <div className="boot-sequence">
+        <div className="boot-sequence text-flicker">
           {bootSteps.map((step, index) => (
-            <div key={index} className="output-text" style={{ animationDelay: `${index * 300}ms` }}>
+            <div 
+              key={index} 
+              className="output-text text-flicker" 
+              style={{ animationDelay: `${index * 300}ms` }}
+            >
               [OK] {step}
             </div>
           ))}
