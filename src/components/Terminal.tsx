@@ -23,7 +23,7 @@ const Terminal: React.FC = () => {
   const welcomeMessage: HistoryEntry = {
     command: 'system',
     output: [{ 
-      text: "Welcome to Terminal Portfolio v1.0.0\nType 'help' to see available commands.\n",
+      text: "Welcome to Terminal Portfolio v1.0.0\nType 'help' to see available commands.\nMobile View is broken, please use desktop for now.\n",
       delay: 10 
     }]
   };
