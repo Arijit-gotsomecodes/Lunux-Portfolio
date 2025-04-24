@@ -18,11 +18,13 @@ html, body {
   overflow: hidden;
   background-color: var(--terminal-background);
   font-family: 'VT323', monospace;
+  font-size: 1.55em;
 }
 
 #root {
   height: 100%;
   width: 100%;
+  /* font-size: larger; */
 }
 
 /* CRT Effect Styles */
